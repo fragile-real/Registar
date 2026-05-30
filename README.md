@@ -13,7 +13,7 @@ Vidljivi indeks služi za pristup unosima.
 - `REGISTAR_LEDGER.csv` — evidencija zapisa
 - `tools/` — lokalne skripte za zatvaranje i proveru
 
-- ## Pravilo
+## Pravilo
 
 Status zapisa može biti zatvoren.  
 Status događaja može ostati nerazrešen.
