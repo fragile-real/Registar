@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REGISTAR / 000</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <span class="sig">REGISTAR</span>
+    <span>000 / ZVUK</span>
+  </header>
+
+  <main>
+
+    <dl class="entry-meta">
+      <dt>BR.</dt>                  <dd>000</dd>
+      <dt>FORMAT</dt>              <dd>ZVUK</dd>
+      <dt>OBLIK</dt>               <dd>ZVUČNI TRAG</dd>
+      <dt>TIP</dt>                 <dd>SIGNAL</dd>
+      <dt>SERIJA</dt>              <dd>NAZIV SERIJE</dd>
+      <dt>DATUM REGISTRACIJE</dt>  <dd>GGGG-MM-DD</dd>
+      <dt>DATUM DOGAĐAJA</dt>      <dd>DATUM DOGAĐAJA ILI NEDATIRANO</dd>
+      <dt>STATUS ZAPISA</dt>       <dd>ZATVOREN</dd>
+      <dt>STATUS DOGAĐAJA</dt>     <dd>NERAZREŠEN</dd>
+      <dt>HASH FAJLA</dt>          <dd class="hash-short">SHA256: [UNSEALED]</dd>
+    </dl>
+
+    <div class="content">
+
+      <div class="reg-audio">
+        <audio preload="metadata" src="../media/000.mp3"></audio>
+
+        <div class="status-line">
+          <span>STATUS: <span data-audio-status>PREKINUTO</span></span>
+          <span>[ <span data-audio-current>00:00</span> / <span data-audio-duration>00:00</span> ]</span>
+        </div>
+
+        <div class="progress-shell">
+          <input class="progress" type="range" value="0" min="0" step="0.1" data-audio-progress aria-label="Tok zvuka">
+        </div>
+
+        <div class="controls">
+          <button type="button" data-audio-play>[ REPRODUKUJ ]</button>
+          <button type="button" data-audio-stop>[ ZAUSTAVI ]</button>
+          <button type="button" data-audio-loop>[ PETLJA: ISKLJ ]</button>
+        </div>
+
+        <p class="caption">
+          ZVUK: <span>000.mp3</span><br>
+          IZVOR: <span>TERENSKI SNIMAK</span><br>
+          TRANSKRIPT: <span>NIJE PRILOŽEN</span>
+        </p>
+      </div>
+
+      <p class="note-text">Zvuk je registrovan bez pokušaja stabilizacije izvora.</p>
+
+    </div>
+
+    <div class="return">
+      <a href="../index.html">← REGISTAR</a>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>zapis zatvoren · događaj nerazrešen</span>
+    <span>—</span>
+  </footer>
+
+  <script>
+(function () {
+  const panels = document.querySelectorAll('.reg-audio');
+
+  function formatTime(seconds) {
+    if (!Number.isFinite(seconds)) return '00:00';
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+  }
+
+  panels.forEach((panel) => {
+    const audio = panel.querySelector('audio');
+    const play = panel.querySelector('[data-audio-play]');
+    const stop = panel.querySelector('[data-audio-stop]');
+    const loop = panel.querySelector('[data-audio-loop]');
+    const progress = panel.querySelector('[data-audio-progress]');
+    const status = panel.querySelector('[data-audio-status]');
+    const current = panel.querySelector('[data-audio-current]');
+    const duration = panel.querySelector('[data-audio-duration]');
+
+    audio.addEventListener('loadedmetadata', () => {
+      duration.textContent = formatTime(audio.duration);
+      progress.max = audio.duration || 0;
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      current.textContent = formatTime(audio.currentTime);
+      progress.value = audio.currentTime || 0;
+    });
+
+    audio.addEventListener('play', () => {
+      status.textContent = 'U TOKU';
+      play.textContent = '[ PAUZIRAJ ]';
+    });
+
+    audio.addEventListener('pause', () => {
+      if (audio.currentTime > 0 && audio.currentTime < audio.duration) {
+        status.textContent = 'PAUZIRANO';
+      }
+      play.textContent = '[ REPRODUKUJ ]';
+    });
+
+    audio.addEventListener('ended', () => {
+      status.textContent = 'PREKINUTO';
+      play.textContent = '[ REPRODUKUJ ]';
+    });
+
+    play.addEventListener('click', () => {
+      if (audio.paused) audio.play();
+      else audio.pause();
+    });
+
+    stop.addEventListener('click', () => {
+      audio.pause();
+      audio.currentTime = 0;
+      status.textContent = 'PREKINUTO';
+      play.textContent = '[ REPRODUKUJ ]';
+    });
+
+    loop.addEventListener('click', () => {
+      audio.loop = !audio.loop;
+      loop.textContent = audio.loop ? '[ PETLJA: UKLJ ]' : '[ PETLJA: ISKLJ ]';
+    });
+
+    progress.addEventListener('input', () => {
+      audio.currentTime = progress.value;
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
